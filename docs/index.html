@@ -640,7 +640,7 @@ function chExplorer() {
     marker: { symbol: "star", size: 12, color: css("--shock") }, customdata: nw.map((t) => t[1]), hovertemplate: "%{x}: шоковых заголовков %{customdata}<extra></extra>" });
   Plotly.react("chExplorer", traces, layout({ shapes, yaxis: { title: { text: "руб. на жителя в месяц" }, gridcolor: css("--rule") }, legend: { orientation: "h", y: -0.2 } }), cfg);
   const mae = (a) => { let s = 0, n = 0; a.forEach((v, k) => { if (v != null && y[12 + k] != null) { s += Math.abs(v - y[12 + k]); n++; } }); return n ? s / n : NaN; };
-  $("#exNote").textContent = `${E.names[i]}, ${E.regions[i]}${E.pop[i] ? ", население " + fmt(E.pop[i]) + " чел." : ""}. MAE прогноза на 2024 г. из декабря 2023 г.: ${DATA.meta.final} — ${fmt(mae(fF))} руб., Prophet — ${fmt(mae(fP))} руб. Пунктирные вертикали — точки изменений (консенсус ≥ 3 из 5 методов).`;
+  $("#exNote").textContent = `${E.names[i]}, ${E.regions[i]}${E.pop[i] ? ", население " + fmt(E.pop[i]) + " чел" : ""}. MAE прогноза на 2024 г. из декабря 2023 г.: ${DATA.meta.final} — ${fmt(mae(fF))} руб., Prophet — ${fmt(mae(fP))} руб. Пунктирные вертикали — точки изменений (консенсус ≥ 3 из 5 методов).`;
 }
 
 /* ---------- старт ---------- */
