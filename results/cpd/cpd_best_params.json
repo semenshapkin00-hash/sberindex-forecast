@@ -1,0 +1,28 @@
+{
+ "pelt": {
+  "pen_mult": 16
+ },
+ "binseg": {
+  "pen_mult": 16
+ },
+ "bottomup": {
+  "pen_mult": 16
+ },
+ "window": {
+  "pen_mult": 0.25
+ },
+ "kernel": {
+  "pen_mult": 6
+ },
+ "cusum": {
+  "h": 14,
+  "k": 1.0
+ },
+ "page_hinkley": {
+  "lam": 7
+ },
+ "bocpd": {
+  "hazard": 0.05,
+  "threshold": 0.3
+ }
+}

@@ -1,0 +1,4 @@
+model,roc_auc,pr_auc,base_rate,precision_top1pct,top_features
+lead1,0.855433392526094,0.11957517657931455,0.015441284538506761,0.21783088235294118,"vol, last_absdev, log_population, max_absdev_3m, reg_share, cat"
+lead1+news,0.8544284285806442,0.11900215954361687,0.015441284538506761,0.21599264705882354,"vol, last_absdev, log_population, max_absdev_3m, cat, market_access"
+nowcast+news,0.8537814673268388,0.11440414236337114,0.015441284538506761,0.2104779411764706,"vol, last_absdev, log_population, max_absdev_3m, cat, level_rel"

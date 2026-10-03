@@ -1,0 +1,41 @@
+{
+ "final": {
+  "members": [
+   "LightGBM",
+   "LightGBM (без новостей)",
+   "LightGBM (без признаков CPD)",
+   "LightGBM (только ряд)",
+   "LightGBM + Chronos-2 (стэкинг)",
+   "SNaive×Growth",
+   "NatSeasonal"
+  ],
+  "mean_weights": {
+   "LightGBM": 0.139,
+   "LightGBM (без новостей)": 0.14,
+   "LightGBM (без признаков CPD)": 0.139,
+   "LightGBM (только ряд)": 0.139,
+   "LightGBM + Chronos-2 (стэкинг)": 0.139,
+   "SNaive×Growth": 0.146,
+   "NatSeasonal": 0.157
+  }
+ },
+ "validation_mae": {
+  "LightGBM": 639.14,
+  "LightGBM (без новостей)": 631.32,
+  "LightGBM (без признаков CPD)": 638.99,
+  "LightGBM (только ряд)": 643.25,
+  "LightGBM + Chronos-2 (стэкинг)": 629.28,
+  "SNaive×Growth": 535.8,
+  "NatSeasonal": 552.14,
+  "Theta-SA": 550.71,
+  "Chronos-2-SA + ковариаты": 539.96,
+  "Chronos-2-SA": 545.46,
+  "Chronos-Bolt-SA": 542.09
+ },
+ "validation_top": [
+  "SNaive×Growth",
+  "Chronos-2-SA + ковариаты",
+  "Chronos-Bolt-SA",
+  "Chronos-2-SA"
+ ]
+}

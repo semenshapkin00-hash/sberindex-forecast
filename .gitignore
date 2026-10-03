@@ -1,0 +1,22 @@
+# окружение
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+.certs/
+
+# данные: по условиям конкурса и лицензиям источников не публикуем, скачиваются скриптом
+data/
+logs/
+results/forecasts/
+results/*/forecasts/
+results/*/all_forecasts.parquet
+results/chronos2_ft/
+results/sample*/
+certs/ca-bundle.pem
+results/*/fm_features.parquet
+landing/artifact.html
+results/cpd/early_warning_preds.parquet
+reports/methodology_report.html
+.pytest_cache/
+SUBMISSION.md

@@ -1,0 +1,11 @@
+# Быстрый прогон для проверки воспроизводимости (~15 мин): подвыборка рядов, меньше итераций.
+# Наследует configs/default.yaml и переопределяет только указанные ключи.
+backtest:
+  sample_series: 600
+models:
+  lightgbm:
+    num_boost_round: 300
+  chronos2:
+    ft_steps: 100
+project:
+  n_jobs: 4

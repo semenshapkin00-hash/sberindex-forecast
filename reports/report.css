@@ -1,0 +1,45 @@
+/* Стиль методологического отчёта (HTML и печать в PDF, A4). */
+:root {
+  --ink: #14181f;
+  --ink-2: #4a5160;
+  --muted: #7d8494;
+  --rule: #dfe3ea;
+  --accent: #2a78d6;
+  --paper: #ffffff;
+  --tint: #f3f6fa;
+  --body: "PT Sans", "Helvetica Neue", Arial, sans-serif;
+  --head: "PT Serif", Georgia, serif;
+  --mono: "PT Mono", "SF Mono", Menlo, monospace;
+}
+@page { size: A4; margin: 16mm 15mm 16mm 15mm; }
+html { background: var(--paper); }
+body {
+  font-family: var(--body); color: var(--ink); background: var(--paper);
+  font-size: 10.5pt; line-height: 1.5; max-width: 182mm; margin: 0 auto; padding-block: 8mm;
+}
+header#title-block-header { border-bottom: 2px solid var(--ink); padding-bottom: 6mm; margin-bottom: 6mm; }
+h1.title { font-family: var(--head); font-size: 22pt; line-height: 1.15; margin: 0 0 2mm; text-wrap: balance; }
+p.subtitle { font-size: 11.5pt; color: var(--ink-2); margin: 0 0 1mm; }
+p.date { color: var(--muted); font-size: 9.5pt; margin: 0; }
+nav#TOC { background: var(--tint); padding: 3mm 6mm; margin-bottom: 6mm; font-size: 9.5pt; columns: 2; column-gap: 8mm; }
+nav#TOC ul { margin: 0; padding-left: 4mm; }
+nav#TOC > ul { padding-left: 0; list-style: none; }
+nav#TOC a { color: var(--ink-2); text-decoration: none; }
+h1 { font-family: var(--head); font-size: 15pt; margin: 9mm 0 3mm; border-top: 1px solid var(--rule); padding-top: 4mm;
+     break-after: avoid; text-wrap: balance; }
+h2 { font-family: var(--head); font-size: 12pt; margin: 6mm 0 2mm; break-after: avoid; }
+p, li { text-wrap: pretty; }
+ul, ol { padding-left: 5mm; }
+li { margin-bottom: 1mm; }
+strong { color: var(--ink); }
+img { max-width: 100%; display: block; margin: 3mm auto 1mm; break-inside: avoid; }
+figure { margin: 4mm 0; break-inside: avoid; }
+figcaption { font-size: 9pt; color: var(--muted); text-align: center; }
+table { border-collapse: collapse; width: 100%; font-size: 8.6pt; margin: 2mm 0 5mm; break-inside: avoid;
+        font-variant-numeric: tabular-nums; }
+th { text-align: left; font-weight: 700; color: var(--ink-2); border-bottom: 1.5px solid var(--ink); padding: 1.5mm 2mm; }
+td { border-bottom: 1px solid var(--rule); padding: 1.2mm 2mm; vertical-align: top; }
+code { font-family: var(--mono); font-size: 9pt; background: var(--tint); padding: 0 1mm; }
+pre { background: var(--tint); padding: 3mm 4mm; font-size: 8.8pt; overflow-x: auto; break-inside: avoid; }
+pre code { background: none; padding: 0; }
+a { color: var(--accent); }

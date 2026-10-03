@@ -1,0 +1,162 @@
+# Конфигурация по умолчанию: пути, источники данных и гиперпараметры всех моделей.
+# Любой параметр можно переопределить своим YAML (--config) или ключом --set a.b=c.
+
+project:
+  name: sberindex-forecast
+  seed: 42
+  n_jobs: 8            # процессов для статистических моделей / Prophet
+
+paths:
+  raw: data/raw
+  external: data/external
+  interim: data/interim
+  processed: data/processed
+  results: results
+  figures: reports/figures
+  ca_bundle: certs/ca-bundle.pem   # собирается scripts/01_download_data.py из certs/*.pem + certifi
+
+# ---------------------------------------------------------------- данные
+data:
+  hackathon_zip_url: https://www.sberbank.com/common/img/uploaded/files/pdf/sberindex/hackathonlicence.zip
+  municipal_dict_url: https://www.sberbank.com/common/files/t_dict_municipal.rar
+  categories:
+    - Все категории
+    - Продовольствие
+    - Здоровье
+    - Общественное питание
+    - Транспорт
+    - Маркетплейсы
+  min_obs: 24                 # в бенчмарк попадают полные ряды (24 мес.)
+
+sberindex_api:                # открытые датасеты sberindex.ru (через /api/sowa)
+  datasets:
+    - consumer-spending                      # расходы по регионам, млрд руб., с 12.2018
+    - consumer-spending-growth               # приросты г/г
+    - consumper-spending-index-sa            # индекс реальных расходов SA
+    - median-wages                           # медианная зарплата
+    - izmenenie-obema-fot                    # фонд оплаты труда
+    - oboroty-biznesa                        # обороты бизнеса
+    - kolichestvo-vnutrennikh-turistov       # внутренний туризм
+    - izmenenie-kolichestva-aktivnikh-torgovo-servisnikh-tochek-po-kategoriyam
+    - inflyaciya-s-sezonnoj-korrektirovkoj
+    - real-key-interest-rate
+
+external:
+  key_rate_url: https://www.cbr.ru/hd_base/KeyRate/
+  calendar_url: https://isdayoff.ru/api/getdata
+  weather:                               # NASA POWER (MERRA-2), помесячно, для центра каждого МО
+    url: https://power.larc.nasa.gov/api/temporal/monthly/point
+    start_year: 2018                     # 2018–2022 — климатическая норма для аномалий
+    end_year: 2024
+    parameters: [T2M, T2M_MIN, T2M_MAX, PRECTOTCORR, SNODP]
+    workers: 4
+  news:
+    start: 2022-12-01
+    end: 2024-12-31
+    sources: [interfax, lenta]
+    sleep: 0.7
+
+# ---------------------------------------------------------------- бэктест
+backtest:
+  warmup_first_origin: 2023-06  # валидационные точки 2023-06…2023-11: выбор участников и стартовые веса ансамбля
+  first_origin: 2023-12       # первая тестовая точка прогноза (последний известный месяц)
+  last_origin: 2024-11
+  horizons: [1, 3, 6, 12]
+  max_horizon: 12
+  sample_series: null         # null = все ряды; число = случайная подвыборка (для быстрого прогона)
+
+# ---------------------------------------------------------------- модели
+models:
+  naive: {enabled: true}
+  seasonal_naive: {enabled: true}          # y(t+h) = y(t+h-12)
+  seasonal_naive_growth: {enabled: true}   # сезонный наивный × годовой темп роста
+  prophet:                                 # базовая модель организаторов
+    enabled: true
+    yearly_seasonality: auto
+    weekly_seasonality: false
+    daily_seasonality: false
+    seasonality_mode: additive
+    changepoint_prior_scale: 0.05
+  ets: {enabled: true, season_length: 12}
+  theta: {enabled: true, season_length: 12}
+  lightgbm:
+    enabled: true
+    target_transform: log_ratio            # прогнозируем log(y[t+h] / y[t])
+    offset: national                       # база: нац. сезонный профиль + тренд (init_score); none — без базы
+    params:
+      objective: l1
+      num_threads: 8
+      max_bin: 127
+      learning_rate: 0.05
+      num_leaves: 63
+      min_data_in_leaf: 50
+      feature_fraction: 0.8
+      bagging_fraction: 0.8
+      bagging_freq: 1
+      lambda_l2: 1.0
+      verbose: -1
+    num_boost_round: 700
+    feature_sets: [base, regional, calendar, weather, spatial, cpd, news]
+  chronos_bolt:
+    enabled: true
+    model_id: amazon/chronos-bolt-base
+    device: auto
+    batch_size: 256
+  chronos2:
+    enabled: true
+    model_id: amazon/chronos-2
+    device: auto
+    batch_size: 256
+    use_covariates: true
+  ensemble:
+    enabled: true
+    members:                               # итоговый «Ансамбль»: модели, обучаемые на панели, + сезонные
+      - LightGBM
+      - LightGBM (без новостей)
+      - LightGBM (без признаков CPD)
+      - LightGBM (только ряд)
+      - LightGBM + Chronos-2 (стэкинг)
+      - SNaive×Growth
+      - NatSeasonal
+    weighting: inverse_mae                 # веса ∝ 1/MAE прошлых прогнозов (категория × ближайший шаг h)
+    k: 4                                   # для вариантов с отбором участников (анализ чувствительности)
+    candidates:                            # кандидаты для вариантов Э1–Э4 (анализ чувствительности)
+      - LightGBM
+      - LightGBM (без новостей)
+      - LightGBM (без признаков CPD)
+      - LightGBM (только ряд)
+      - LightGBM + Chronos-2 (стэкинг)
+      - SNaive×Growth
+      - NatSeasonal
+      - Theta-SA
+      - Chronos-2-SA + ковариаты
+      - Chronos-2-SA
+      - Chronos-Bolt-SA
+
+# ---------------------------------------------------------------- точки изменений
+cpd:
+  features:                                # признаки детектора для прогнозной модели (as-of)
+    pelt_pen_mult: 12                      # подобрано на валидационной синтетике (scripts/05)
+    bocpd_hazard: 0.05
+  target: log_value                        # анализируем логарифм ряда
+  deseasonalize: regional                  # сезонность снимаем региональным профилем 2019–2023
+  offline:
+    methods: [pelt, binseg, bottomup, window, kernel]
+    penalty: bic
+    min_size: 2
+  online:
+    methods: [cusum, page_hinkley, bocpd, bocpd_news, forecast_residual]
+    bocpd:
+      hazard: 0.03
+      news_hazard_boost: 4.0
+    cusum: {k: 0.5, h: 4.0}
+    forecast_residual: {quantiles: [0.05, 0.95], consecutive: 1}
+  synthetic:
+    n_series: 2000
+    shock_magnitudes: [0.10, 0.20, 0.35]
+    shock_types: [level, slope, transient]
+  evaluation:
+    margin: 1                              # допуск в месяцах при сопоставлении точек
+  early_warning:
+    shock_threshold: 0.15                  # |log-отклонение от прогноза| ≥ 15% = шок
+    lead_months: [1, 2, 3]

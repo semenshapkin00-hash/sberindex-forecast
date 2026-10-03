@@ -1,0 +1,29 @@
+# Python 3.12
+numpy>=1.26,<2.3
+pandas>=2.2,<3
+pyarrow>=21
+pyyaml>=6
+requests>=2.31
+certifi
+beautifulsoup4>=4.12
+lxml>=5
+tqdm>=4.66
+openpyxl>=3.1
+scipy>=1.12
+scikit-learn>=1.5
+statsmodels>=0.14
+# forecasting
+prophet>=1.1.6
+statsforecast>=2.0
+lightgbm>=4.5
+torch>=2.4
+chronos-forecasting>=2.0
+# change point detection
+ruptures>=1.1.9
+# visualisation
+matplotlib>=3.9
+plotly>=5.24
+pymorphy3>=2.0
+pymorphy3-dicts-ru
+# тесты
+pytest>=8
